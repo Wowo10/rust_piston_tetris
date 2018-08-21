@@ -1,0 +1,17 @@
+[package]
+name = "tetris"
+version = "0.0.9"
+authors = [
+    "TyOverby <ty@pre-alpha.com>",
+    "Nikita Pekin <contact@nikitapek.in>"
+]
+
+[[bin]]
+name = "tetris"
+
+[dependencies]
+piston = "0.37.0"
+piston2d-graphics = "0.26.0"
+pistoncore-glutin_window = "0.47.0"
+piston2d-opengl_graphics = "0.53.0"
+rand = "0.5"
