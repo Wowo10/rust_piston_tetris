@@ -1,11 +1,11 @@
 pub enum Block{
-    line,
-    square,
-    z_style,
-    s_style,
-    l_style,
-    linv_style,
-    k_style,
+    Line,
+    Square,
+    ZStyle,
+    SStyle,
+    LStyle,
+    LinvStyle,
+    KStyle,
 }
 
 /*

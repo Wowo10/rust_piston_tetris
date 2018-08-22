@@ -1,5 +1,7 @@
-use opengl_graphics::GlGraphics;
-use piston::input::*;
+extern crate find_folder;
+extern crate piston_window;
+
+use piston_window::*;
 
 mod state;
 use self::state::State;
@@ -11,8 +13,14 @@ pub mod timers;
 
 mod block;
 
+const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
+const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
+const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
+const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+const OFFSET: u32 = 4; //should be even
+
 pub struct App {
-    pub gl: GlGraphics, // OpenGL drawing backend.
+    //pub gl: GlGraphics, // OpenGL drawing backend.
     pub scene: Vec<Vec<State>>,
 
     pub size: u32,
@@ -24,9 +32,9 @@ pub struct App {
 }
 
 impl App {
-    pub fn create(gl: GlGraphics, size: u32, width: u8, height: u8) -> Self {
+    pub fn create(size: u32, width: u8, height: u8) -> Self {
         let mut temp = App {
-            gl: gl,
+            //gl: gl,
             scene: Vec::new(),
             size: size,
             renderframes: 0,
@@ -62,23 +70,16 @@ impl App {
         }
     }
 
-    pub fn render(&mut self, args: &RenderArgs) {
-        use graphics::*;
+    pub fn render(&mut self, window: &mut PistonWindow, e: Input, args: RenderArgs) {
+        //use graphics::*;
 
         self.renderframes += 1;
 
-        const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
-        const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
-        const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
-        const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-
-        let offset = 4; //should be even
-
         let square = rectangle::square(0.0, 0.0, self.size as f64);
         let squareinner = rectangle::square(
-            (offset / 2) as f64,
-            (offset / 2) as f64,
-            (self.size - offset) as f64,
+            (OFFSET / 2) as f64,
+            (OFFSET / 2) as f64,
+            (self.size - OFFSET) as f64,
         );
 
         let size = (self.size as f64) / 2.0;
@@ -88,14 +89,14 @@ impl App {
 
         let scene = &self.scene;
 
-        self.gl.draw(args.viewport(), |c, gl| {
-            clear(GREEN, gl);
+        window.draw_2d(&e, |c, g| {
+            clear(GREEN, g);
 
             for i in 0..width {
                 for j in 0..heigth {
                     let transposition = c.transform
                         .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
-                    rectangle(GREEN, square, transposition, gl);
+                    rectangle(GREEN, square, transposition, g);
 
                     let color = match &scene[i][j] {
                         State::Free => BLACK,
@@ -103,13 +104,13 @@ impl App {
                         _ => BLUE,
                     };
 
-                    rectangle(color, squareinner, transposition, gl);
+                    rectangle(color, squareinner, transposition, g);
                 }
             }
         });
     }
 
-    pub fn update(&mut self, _args: &UpdateArgs) {
+    pub fn update(&mut self, args: UpdateArgs) {
         self.updateframes += 1;
 
         for block in &mut self.activeblock {
@@ -135,18 +136,5 @@ impl App {
     fn random_pos_square(&mut self) {
         let mut rng = thread_rng();
 
-        // let mut rand_x: usize = rng.gen(); //% &self.scene.len();
-        // rand_x %= &self.scene.len();
-
-        // let mut rand_y: usize = rng.gen(); //% &self.scene[0].len();
-        // rand_y %= &self.scene[0].len();
-
-        // let random: i8 = rng.gen(); // % 3;
-
-        // self.scene[rand_x][rand_y] = match random % 3 {
-        //     0 => State::Free,
-        //     1 => State::Taken,
-        //     _ => State::Active,
-        // };
     }
 }
