@@ -24,27 +24,18 @@ fn main() {
     let width: u8 = 10;
     let heigth: u8 = 25;
 
-    let temp = WindowSettings::new("Tetris", [width as u32 * size, heigth as u32 * size])
-            .opengl(opengl)
-            .vsync(true)
-            .exit_on_esc(true)          
-            .build()
-            .unwrap();
+    let temp = WindowSettings::new("WowoTetris", [width as u32 * size, heigth as u32 * size])
+        .opengl(opengl)
+        .vsync(true)
+        .exit_on_esc(true)
+        .build()
+        .unwrap();
 
     // Create an Glutin window.
     let mut window: Window = temp;
 
     // Create a new game and run it.
-    let mut app = app::App {
-        gl: GlGraphics::new(opengl),
-        scene: Vec::new(),
-        size: size,
-        renderframes: 0,
-        updateframes: 0,
-        timers: new_timers(),
-    };
-
-    app.init(width, heigth);
+    let mut app = app::App::create(GlGraphics::new(opengl), size, width, heigth);
 
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
@@ -63,8 +54,8 @@ fn main() {
         "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}ms",
         app.updateframes,
         app.renderframes,
-        app.updateframes / ((duration/1000) as usize),
-        app.renderframes / ((duration/1000) as usize),
+        app.updateframes / ((duration / 1000) as usize),
+        app.renderframes / ((duration / 1000) as usize),
         duration
     );
 }

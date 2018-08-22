@@ -19,10 +19,27 @@ pub struct App {
     pub renderframes: usize,
     pub updateframes: usize,
     pub timers: timers::Timers,
+
+    pub activeblock: Vec<[u8; 2]>,
 }
 
 impl App {
-    pub fn init(&mut self, width: u8, height: u8) {
+    pub fn create(gl: GlGraphics, size: u32,width: u8, height: u8) -> Self {
+        let mut temp = App {
+            gl: gl,
+            scene: Vec::new(),
+            size: size,
+            renderframes: 0,
+            updateframes: 0,
+            timers: timers::new_timers(),
+            activeblock: Vec::new(),
+        };
+
+        temp.init(width, height);
+        temp
+    }
+
+    fn init(&mut self, width: u8, height: u8) {
         for _ in 0..width {
             let mut v: Vec<State> = Vec::new();
             for _ in 0..height {
@@ -35,7 +52,7 @@ impl App {
     pub fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
 
-        self.renderframes +=1;
+        self.renderframes += 1;
 
         const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
         const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
@@ -47,7 +64,7 @@ impl App {
         let square = rectangle::square(0.0, 0.0, self.size as f64);
         let squareinner = rectangle::square(
             (offset / 2) as f64,
-            (offset / 2) as f64, 
+            (offset / 2) as f64,
             (self.size - offset) as f64,
         );
 
@@ -80,11 +97,13 @@ impl App {
     }
 
     pub fn update(&mut self, _args: &UpdateArgs) {
-        
         self.updateframes += 1;
 
+        if self.timers.updatetimer.did_pass(2000) {
+            println!("passed");
 
-
+            self.timers.updatetimer.reset()
+        }
     }
 
     fn random_pos_square(&mut self) {

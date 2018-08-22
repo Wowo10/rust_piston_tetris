@@ -27,7 +27,7 @@ impl Timer {
 }
 
 pub struct Timers {
-    updatetimer: Timer,
+    pub updatetimer: Timer,
 }
 
 pub fn new_timers() -> Timers {
