@@ -47,7 +47,7 @@ impl App {
         let square = rectangle::square(0.0, 0.0, self.size as f64);
         let squareinner = rectangle::square(
             (offset / 2) as f64,
-            ((offset - 0) / 2) as f64, //hack - off
+            (offset / 2) as f64, 
             (self.size - offset) as f64,
         );
 
