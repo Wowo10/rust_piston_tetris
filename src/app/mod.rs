@@ -7,7 +7,7 @@ mod state;
 use self::state::State;
 
 extern crate rand;
-use app::rand::prelude::*;
+//use app::rand::prelude::*;
 
 pub mod timers;
 
@@ -56,7 +56,7 @@ impl App {
             &self.scene.push(v);
         }
 
-        self.activeblock.push([width / 2, 0]);
+        self.spawn_new_active_block(width / 2);
     }
 
     fn clear_board(&mut self) {
@@ -70,9 +70,7 @@ impl App {
         }
     }
 
-    pub fn render(&mut self, window: &mut PistonWindow, e: Input, args: RenderArgs) {
-        //use graphics::*;
-
+    pub fn render(&mut self, window: &mut PistonWindow, e: Input, _args: RenderArgs) {
         self.renderframes += 1;
 
         let square = rectangle::square(0.0, 0.0, self.size as f64);
@@ -110,31 +108,100 @@ impl App {
         });
     }
 
-    pub fn update(&mut self, args: UpdateArgs) {
+    pub fn update(&mut self, _args: UpdateArgs) {
         self.updateframes += 1;
+
+        self.clear_board();
 
         for block in &mut self.activeblock {
             self.scene[block[0] as usize][block[1] as usize] = State::Active;
         }
 
         if self.timers.updatetimer.did_pass(2000) {
-            println!("passed");
-
-            self.clear_board();
-
-            let possible = true; //TODO
-            if possible {
-                for block in &mut self.activeblock {
-                    block[1] += 1;
+            if !&self.move_down() { //keep in mind tha bug bro tomorrow
+                while self.activeblock.len() != 0 {
+                    if let Some(block) = self.activeblock.pop() {
+                        self.scene[block[0] as usize][block[1] as usize] = State::Taken;
+                    }
                 }
+                let startpos = (self.scene.len() / 2 as usize) as u8;
+                self.spawn_new_active_block(startpos);
             }
-
-            self.timers.updatetimer.reset()
         }
     }
 
-    fn random_pos_square(&mut self) {
-        let mut rng = thread_rng();
+    pub fn handle_input(&mut self, key: Key) {
+        match key {
+            Key::Left | Key::A => {
+                &mut self.move_left();
+            }
+            Key::Right | Key::D => {
+                &mut self.move_right();
+            }
+            Key::Down | Key::S => {
+                &mut self.move_down();
+            }
+            Key::Up | Key::W => {
+                &mut self.rotate();
+            }
+            Key::Space => {
+                &mut self.drop();
+            }
 
+            _ => {}
+        }
+    }
+
+    fn move_left(&mut self) {
+        let possible = true; //TODO
+        if possible {
+            for block in &mut self.activeblock {
+                block[0] -= 1;
+            }
+        }
+    }
+
+    fn move_right(&mut self) {
+        let possible = true; //TODO
+        if possible {
+            for block in &mut self.activeblock {
+                block[0] += 1;
+            }
+        }
+    }
+
+    fn move_down(&mut self) -> bool {
+        let possible = true; //TODO
+
+        let mut lowest = 0;
+
+        if possible {
+            for block in &mut self.activeblock {
+                block[1] += 1;
+                if block[1] > lowest {
+                    lowest = block[1];
+                }
+            }
+        }
+        self.timers.updatetimer.reset();
+
+        lowest != ((&self.scene[0].len() - 1) as u8) //temporary rly
+    }
+
+    fn rotate(&mut self) {
+        println!("Rotated!"); //EZ when it is singe huh?
+    }
+
+    fn drop(&mut self) {
+        //animate would be appreciated
+
+        let mut able = true; //TODO
+        while able {
+            able = self.move_down();
+        }
+    }
+
+    fn spawn_new_active_block(&mut self, startpos: u8) {
+        self.activeblock.push([startpos, 0]); //TODO: add randoming actual blocks
     }
 }

@@ -30,7 +30,9 @@ fn main() {
     
     while let Some(e) = window.next() {
         match e {
-            Input::Release(Button::Keyboard(key)) => {}
+            Input::Release(Button::Keyboard(key)) => {
+                app.handle_input(key);
+            }
 
             Input::Update(args) => {
                 app.update(args);
