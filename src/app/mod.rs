@@ -9,6 +9,8 @@ use app::rand::prelude::*;
 
 pub mod timers;
 
+mod block;
+
 pub struct App {
     pub gl: GlGraphics, // OpenGL drawing backend.
     pub scene: Vec<Vec<State>>,
