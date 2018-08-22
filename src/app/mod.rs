@@ -7,6 +7,8 @@ use self::state::State;
 extern crate rand;
 use app::rand::prelude::*;
 
+pub mod timers;
+
 pub struct App {
     pub gl: GlGraphics, // OpenGL drawing backend.
     pub scene: Vec<Vec<State>>,
@@ -14,6 +16,7 @@ pub struct App {
     pub size: u32,
     pub renderframes: usize,
     pub updateframes: usize,
+    pub timers: timers::Timers,
 }
 
 impl App {
@@ -77,6 +80,7 @@ impl App {
     pub fn update(&mut self, _args: &UpdateArgs) {
         
         self.updateframes += 1;
+
 
 
     }

@@ -11,12 +11,12 @@ use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderEvent, UpdateEvent};
 use piston::window::WindowSettings;
 
-use std::time::{Instant};
+use app::timers::*;
 
 fn main() {
     // Change this to OpenGL::V2_1 if not working.
 
-    let start = Instant::now();
+    let start = Timer::create();
 
     let opengl = OpenGL::V3_2;
 
@@ -41,6 +41,7 @@ fn main() {
         size: size,
         renderframes: 0,
         updateframes: 0,
+        timers: new_timers(),
     };
 
     app.init(width, heigth);
@@ -56,14 +57,14 @@ fn main() {
         }
     }
 
-    let duration = Instant::now().duration_since(start);
+    let duration = start.get_elapsed();
 
     println!(
-        "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}s",
+        "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}ms",
         app.updateframes,
         app.renderframes,
-        app.updateframes / (duration.as_secs() as usize),
-        app.renderframes / (duration.as_secs() as usize),
-        duration.as_secs()
+        app.updateframes / ((duration/1000) as usize),
+        app.renderframes / ((duration/1000) as usize),
+        duration
     );
 }
