@@ -12,6 +12,8 @@ pub struct App {
     pub scene: Vec<Vec<State>>,
 
     pub size: u32,
+    pub renderframes: usize,
+    pub updateframes: usize,
 }
 
 impl App {
@@ -27,6 +29,8 @@ impl App {
 
     pub fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
+
+        self.renderframes +=1;
 
         const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
         const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
@@ -50,7 +54,6 @@ impl App {
         let scene = &self.scene;
 
         self.gl.draw(args.viewport(), |c, gl| {
-
             clear(GREEN, gl);
 
             for i in 0..width {
@@ -72,20 +75,27 @@ impl App {
     }
 
     pub fn update(&mut self, _args: &UpdateArgs) {
+        
+        self.updateframes += 1;
+
+
+    }
+
+    fn random_pos_square(&mut self) {
         let mut rng = thread_rng();
 
-        let mut rand_x: usize = rng.gen();//% &self.scene.len();
-        rand_x %= &self.scene.len();
+        // let mut rand_x: usize = rng.gen(); //% &self.scene.len();
+        // rand_x %= &self.scene.len();
 
-        let mut rand_y: usize = rng.gen();//% &self.scene[0].len();
-        rand_y %= &self.scene[0].len();
+        // let mut rand_y: usize = rng.gen(); //% &self.scene[0].len();
+        // rand_y %= &self.scene[0].len();
 
-        let random: i8 = rng.gen();// % 3;
+        // let random: i8 = rng.gen(); // % 3;
 
-        self.scene[rand_x][rand_y] = match random%3 {
-            0 => State::Free,
-            1 => State::Taken,
-            _ => State::Active
-        };
+        // self.scene[rand_x][rand_y] = match random % 3 {
+        //     0 => State::Free,
+        //     1 => State::Taken,
+        //     _ => State::Active,
+        // };
     }
 }

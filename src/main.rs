@@ -11,26 +11,36 @@ use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderEvent, UpdateEvent};
 use piston::window::WindowSettings;
 
+use std::time::{Instant};
+
 fn main() {
     // Change this to OpenGL::V2_1 if not working.
+
+    let start = Instant::now();
+
     let opengl = OpenGL::V3_2;
 
     let size: u32 = 20;
     let width: u8 = 10;
-    let heigth: u8 = 30;
+    let heigth: u8 = 25;
 
-    // Create an Glutin window.
-    let mut window: Window = WindowSettings::new("Tetris", [width as u32 * size, heigth as u32 * size])
+    let temp = WindowSettings::new("Tetris", [width as u32 * size, heigth as u32 * size])
             .opengl(opengl)
-            .exit_on_esc(true)
+            .vsync(true)
+            .exit_on_esc(true)          
             .build()
             .unwrap();
+
+    // Create an Glutin window.
+    let mut window: Window = temp;
 
     // Create a new game and run it.
     let mut app = app::App {
         gl: GlGraphics::new(opengl),
         scene: Vec::new(),
         size: size,
+        renderframes: 0,
+        updateframes: 0,
     };
 
     app.init(width, heigth);
@@ -45,4 +55,15 @@ fn main() {
             app.update(&u);
         }
     }
+
+    let duration = Instant::now().duration_since(start);
+
+    println!(
+        "update: {}, render: {}, update/s:{}, render/s:{}, duration:{}s",
+        app.updateframes,
+        app.renderframes,
+        app.updateframes / (duration.as_secs() as usize),
+        app.renderframes / (duration.as_secs() as usize),
+        duration.as_secs()
+    );
 }
