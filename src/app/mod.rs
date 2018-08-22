@@ -24,7 +24,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn create(gl: GlGraphics, size: u32,width: u8, height: u8) -> Self {
+    pub fn create(gl: GlGraphics, size: u32, width: u8, height: u8) -> Self {
         let mut temp = App {
             gl: gl,
             scene: Vec::new(),
@@ -46,6 +46,19 @@ impl App {
                 v.push(State::Free);
             }
             &self.scene.push(v);
+        }
+
+        self.activeblock.push([width / 2, 0]);
+    }
+
+    fn clear_board(&mut self) {
+        for row in &mut self.scene {
+            for state in row {
+                match state {
+                    State::Taken => {}
+                    _ => *state = State::Free,
+                };
+            }
         }
     }
 
@@ -99,8 +112,21 @@ impl App {
     pub fn update(&mut self, _args: &UpdateArgs) {
         self.updateframes += 1;
 
+        for block in &mut self.activeblock {
+            self.scene[block[0] as usize][block[1] as usize] = State::Active;
+        }
+
         if self.timers.updatetimer.did_pass(2000) {
             println!("passed");
+
+            self.clear_board();
+
+            let possible = true; //TODO
+            if possible {
+                for block in &mut self.activeblock {
+                    block[1] += 1;
+                }
+            }
 
             self.timers.updatetimer.reset()
         }
