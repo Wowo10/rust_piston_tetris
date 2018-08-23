@@ -44,6 +44,8 @@ fn main() {
 
             _ => {}
         }
+
+        if app.exit {break};
     }
 
     let duration = start.get_elapsed();
@@ -56,4 +58,6 @@ fn main() {
         app.renderframes / ((duration / 1000) as usize),
         duration
     );
+
+    println!("\nGame Over! Score: {}", app.score);
 }

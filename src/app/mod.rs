@@ -29,6 +29,9 @@ pub struct App {
     pub timers: timers::Timers,
 
     pub activeblock: Vec<[u8; 2]>,
+
+    pub exit: bool,
+    pub score: u32,
 }
 
 impl App {
@@ -41,6 +44,8 @@ impl App {
             updateframes: 0,
             timers: timers::new_timers(),
             activeblock: Vec::new(),
+            exit: false,
+            score: 0,
         };
 
         temp.init(width, height);
@@ -235,16 +240,65 @@ impl App {
         while self.able_move_down() {
             self.move_down();
         }
+
+        self.spawn_new_active_block();
+    }
+
+    fn check_lines(&mut self) {
+        // for (i,row) in &mut self.scene.iter().enumerate(){
+        //     for (j,_) in row.iter().enumerate(){
+        //         print!("[{}, {}]", i,j);
+        //     }
+        //     println!("");
+        // }
+
+        for i in 0..self.scene[0].len() {
+            let mut test = true;
+            for j in 0..self.scene.len() {
+                match self.scene[j][i] {
+                    State::Taken => {}
+                    _ => {
+                        test = false;
+                        break;
+                    }
+                }
+            }
+
+            if test {
+                self.score += 20;
+                for j in 0..self.scene.len() {
+                    self.scene[j][i] = State::Free;
+                }
+
+                for k in (1..i+1).rev() {
+                    for j in 0..self.scene.len() {
+                        self.scene[j][k] = match self.scene[j][k - 1] {
+                            //Gotta get rid of this sheet - probably copy trait on enum
+                            State::Active => State::Active,
+                            State::Taken => State::Taken,
+                            State::Free => State::Free,
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fn spawn_new_active_block(&mut self) {
         while self.activeblock.len() != 0 {
             if let Some(block) = self.activeblock.pop() {
                 self.scene[block[0] as usize][block[1] as usize] = State::Taken;
+                if block[1] == 0 {
+                    self.exit = true;
+                    return;
+                }
             }
         }
 
+        self.check_lines();
+
         let startpos = (self.scene.len() / 2 as usize) as u8;
-        self.activeblock.push([startpos, 0]); //TODO: add randoming actual blocks
+        self.activeblock.push([startpos-1, 0]); //TODO: add randoming actual blocks
+        //self.activeblock.push([startpos-1, 1]); //TODO: add randoming actual blocks
     }
 }
