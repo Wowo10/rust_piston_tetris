@@ -230,7 +230,48 @@ impl App {
     }
 
     fn rotate(&mut self) {
-        println!("Rotated!"); //EZ when it is single huh?
+        let center = self.activeblock[1];
+        self.activeblock.remove(1);
+
+        let copy = self.activeblock.to_vec();
+
+        self.activeblock.clear();
+
+        for (i, &block) in copy.iter().enumerate() {
+            let vec = App::substract_vectors(
+                App::translate_to_signed_vector(center),
+                App::translate_to_signed_vector(block),
+            );
+
+            let vec = App::rotate_vector_90(vec);
+
+            let vec = App::add_vectors(App::translate_to_signed_vector(center), vec);
+
+            self.activeblock.push(App::translate_to_unsigned_vector(vec));
+            if i == 1 { //hack to keep second element the same
+                self.activeblock.push(center);
+            } 
+        }
+    }
+
+    fn translate_to_signed_vector(vector: [u8; 2]) -> [i8; 2] {
+        [vector[0] as i8, vector[1] as i8]
+    }
+
+    fn translate_to_unsigned_vector(vector: [i8; 2]) -> [u8; 2] {
+        [vector[0] as u8, vector[1] as u8]
+    }
+
+    fn add_vectors(vector1: [i8; 2], vector2: [i8; 2]) -> [i8; 2] {
+        [vector1[0] + vector2[0], vector1[1] + vector2[1]]
+    }
+
+    fn substract_vectors(vector1: [i8; 2], vector2: [i8; 2]) -> [i8; 2] {
+        [vector1[0] - vector2[0], vector1[1] - vector2[1]]
+    }
+
+    fn rotate_vector_90(vector: [i8; 2]) -> [i8; 2] {
+        [vector[1] * -1, vector[0]]
     }
 
     fn drop(&mut self) {
@@ -303,14 +344,20 @@ impl App {
             let random2 = random % 2;
 
             match random2 {
-                0 => {pos[1] = pos[1] + 1;}
-                1 => {pos[0] = pos[0] + 1;}
-                _ => {println!("Something broke: {} %2={}", random, random2);}
+                0 => {
+                    pos[1] = pos[1] + 1;
+                }
+                1 => {
+                    pos[0] = pos[0] + 1;
+                }
+                _ => {
+                    println!("Something broke: {} %2={}", random, random2);
+                }
             }
 
             vector.push([pos[0], pos[1]]);
         }
-        
+
         vector
     }
 }
