@@ -56,7 +56,7 @@ impl App {
             &self.scene.push(v);
         }
 
-        self.spawn_new_active_block(width / 2);
+        self.spawn_new_active_block();
     }
 
     fn clear_board(&mut self) {
@@ -118,14 +118,10 @@ impl App {
         }
 
         if self.timers.updatetimer.did_pass(2000) {
-            if !&self.move_down() { //keep in mind tha bug bro tomorrow
-                while self.activeblock.len() != 0 {
-                    if let Some(block) = self.activeblock.pop() {
-                        self.scene[block[0] as usize][block[1] as usize] = State::Taken;
-                    }
-                }
-                let startpos = (self.scene.len() / 2 as usize) as u8;
-                self.spawn_new_active_block(startpos);
+            if self.able_move_down() {
+                self.move_down();
+            } else {
+                self.spawn_new_active_block();
             }
         }
     }
@@ -139,7 +135,7 @@ impl App {
                 &mut self.move_right();
             }
             Key::Down | Key::S => {
-                &mut self.move_down();
+                &self.move_down();
             }
             Key::Up | Key::W => {
                 &mut self.rotate();
@@ -152,8 +148,24 @@ impl App {
         }
     }
 
+    fn able_move_left(&self) -> bool {
+        for block in &self.activeblock {
+            let x_pos = block[0];
+            if x_pos == 0 {
+                return false;
+            }
+            match &self.scene[(block[0] - 1) as usize][block[1] as usize] {
+                State::Taken => {
+                    return false;
+                }
+                _ => {}
+            }
+        }
+        true
+    }
+
     fn move_left(&mut self) {
-        let possible = true; //TODO
+        let possible = self.able_move_left();
         if possible {
             for block in &mut self.activeblock {
                 block[0] -= 1;
@@ -161,8 +173,24 @@ impl App {
         }
     }
 
+    fn able_move_right(&self) -> bool {
+        for block in &self.activeblock {
+            let x_pos = block[0];
+            if x_pos == (&self.scene.len() - 1) as u8 {
+                return false;
+            }
+            match &self.scene[(block[0] + 1) as usize][block[1] as usize] {
+                State::Taken => {
+                    return false;
+                }
+                _ => {}
+            }
+        }
+        true
+    }
+
     fn move_right(&mut self) {
-        let possible = true; //TODO
+        let possible = self.able_move_right();
         if possible {
             for block in &mut self.activeblock {
                 block[0] += 1;
@@ -170,22 +198,31 @@ impl App {
         }
     }
 
-    fn move_down(&mut self) -> bool {
-        let possible = true; //TODO
+    fn able_move_down(&self) -> bool {
+        for block in &self.activeblock {
+            let y_pos = block[1];
+            if y_pos == (&self.scene[0].len() - 1) as u8 {
+                return false;
+            }
+            match &self.scene[block[0] as usize][(block[1] + 1) as usize] {
+                State::Taken => {
+                    return false;
+                }
+                _ => {}
+            }
+        }
+        true
+    }
 
-        let mut lowest = 0;
+    fn move_down(&mut self) {
+        let possible = self.able_move_down(); //TODO
 
         if possible {
             for block in &mut self.activeblock {
                 block[1] += 1;
-                if block[1] > lowest {
-                    lowest = block[1];
-                }
             }
         }
         self.timers.updatetimer.reset();
-
-        lowest != ((&self.scene[0].len() - 1) as u8) //temporary rly
     }
 
     fn rotate(&mut self) {
@@ -195,13 +232,19 @@ impl App {
     fn drop(&mut self) {
         //animate would be appreciated
 
-        let mut able = true; //TODO
-        while able {
-            able = self.move_down();
+        while self.able_move_down() {
+            self.move_down();
         }
     }
 
-    fn spawn_new_active_block(&mut self, startpos: u8) {
+    fn spawn_new_active_block(&mut self) {
+        while self.activeblock.len() != 0 {
+            if let Some(block) = self.activeblock.pop() {
+                self.scene[block[0] as usize][block[1] as usize] = State::Taken;
+            }
+        }
+
+        let startpos = (self.scene.len() / 2 as usize) as u8;
         self.activeblock.push([startpos, 0]); //TODO: add randoming actual blocks
     }
 }
