@@ -20,7 +20,6 @@ const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 const OFFSET: u32 = 4; //should be even
 
 pub struct App {
-    //pub gl: GlGraphics, // OpenGL drawing backend.
     pub scene: Vec<Vec<State>>,
 
     pub size: u32,
@@ -220,7 +219,7 @@ impl App {
     }
 
     fn move_down(&mut self) {
-        let possible = self.able_move_down(); //TODO
+        let possible = self.able_move_down();
 
         if possible {
             for block in &mut self.activeblock {
@@ -231,7 +230,7 @@ impl App {
     }
 
     fn rotate(&mut self) {
-        println!("Rotated!"); //EZ when it is singe huh?
+        println!("Rotated!"); //EZ when it is single huh?
     }
 
     fn drop(&mut self) {
@@ -285,7 +284,7 @@ impl App {
 
         self.check_lines();
 
-        let startpos = (self.scene.len() / 2 as usize) as u8;
+        let startpos = (self.scene.len() / 2 as usize) as u8 - 1;
 
         for block in App::random_block(startpos) {
             self.activeblock.push(block);
@@ -293,14 +292,25 @@ impl App {
     }
 
     pub fn random_block(startpos: u8) -> Vec<[u8; 2]> {
-        
         let mut rng = thread_rng();
 
-        let vector: Vec<[u8; 2]>;
-        for i in 0..4{ //kek tetris
+        //let mut vector = vec![[startpos - 1, 0]];
+        let mut pos: [u8; 2] = [startpos, 0];
+        let mut vector = vec![[pos[0], pos[1]]];
 
+        for _ in 0..3 {
+            let random: u8 = rng.gen();
+            let random2 = random % 2;
+
+            match random2 {
+                0 => {pos[1] = pos[1] + 1;}
+                1 => {pos[0] = pos[0] + 1;}
+                _ => {println!("Something broke: {} %2={}", random, random2);}
+            }
+
+            vector.push([pos[0], pos[1]]);
         }
         
-        vec![[startpos-1, 0], [startpos-2, 0]]
+        vector
     }
 }
