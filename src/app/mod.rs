@@ -7,7 +7,7 @@ mod state;
 use self::state::State;
 
 extern crate rand;
-//use app::rand::prelude::*;
+use app::rand::prelude::*;
 
 pub mod timers;
 
@@ -67,10 +67,10 @@ impl App {
     fn clear_board(&mut self) {
         for row in &mut self.scene {
             for state in row {
-                match state {
+                match *state {
                     State::Taken => {}
                     _ => *state = State::Free,
-                };
+                }
             }
         }
     }
@@ -134,19 +134,19 @@ impl App {
     pub fn handle_input(&mut self, key: Key) {
         match key {
             Key::Left | Key::A => {
-                &mut self.move_left();
+                &self.move_left();
             }
             Key::Right | Key::D => {
-                &mut self.move_right();
+                &self.move_right();
             }
             Key::Down | Key::S => {
                 &self.move_down();
             }
             Key::Up | Key::W => {
-                &mut self.rotate();
+                &self.rotate();
             }
             Key::Space => {
-                &mut self.drop();
+                &self.drop();
             }
 
             _ => {}
@@ -159,7 +159,7 @@ impl App {
             if x_pos == 0 {
                 return false;
             }
-            match &self.scene[(block[0] - 1) as usize][block[1] as usize] {
+            match &self.scene[(x_pos - 1) as usize][block[1] as usize] {
                 State::Taken => {
                     return false;
                 }
@@ -184,7 +184,7 @@ impl App {
             if x_pos == (&self.scene.len() - 1) as u8 {
                 return false;
             }
-            match &self.scene[(block[0] + 1) as usize][block[1] as usize] {
+            match &self.scene[(x_pos + 1) as usize][block[1] as usize] {
                 State::Taken => {
                     return false;
                 }
@@ -245,13 +245,6 @@ impl App {
     }
 
     fn check_lines(&mut self) {
-        // for (i,row) in &mut self.scene.iter().enumerate(){
-        //     for (j,_) in row.iter().enumerate(){
-        //         print!("[{}, {}]", i,j);
-        //     }
-        //     println!("");
-        // }
-
         for i in 0..self.scene[0].len() {
             let mut test = true;
             for j in 0..self.scene.len() {
@@ -270,14 +263,9 @@ impl App {
                     self.scene[j][i] = State::Free;
                 }
 
-                for k in (1..i+1).rev() {
+                for k in (1..i + 1).rev() {
                     for j in 0..self.scene.len() {
-                        self.scene[j][k] = match self.scene[j][k - 1] {
-                            //Gotta get rid of this sheet - probably copy trait on enum
-                            State::Active => State::Active,
-                            State::Taken => State::Taken,
-                            State::Free => State::Free,
-                        }
+                        self.scene[j][k] = self.scene[j][k - 1];
                     }
                 }
             }
@@ -298,7 +286,21 @@ impl App {
         self.check_lines();
 
         let startpos = (self.scene.len() / 2 as usize) as u8;
-        self.activeblock.push([startpos-1, 0]); //TODO: add randoming actual blocks
-        //self.activeblock.push([startpos-1, 1]); //TODO: add randoming actual blocks
+
+        for block in App::random_block(startpos) {
+            self.activeblock.push(block);
+        }
+    }
+
+    pub fn random_block(startpos: u8) -> Vec<[u8; 2]> {
+        
+        let mut rng = thread_rng();
+
+        let vector: Vec<[u8; 2]>;
+        for i in 0..4{ //kek tetris
+
+        }
+        
+        vec![[startpos-1, 0], [startpos-2, 0]]
     }
 }
