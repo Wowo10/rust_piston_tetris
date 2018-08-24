@@ -15,9 +15,11 @@ fn main() {
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
 
-    let size: u32 = 20;
-    let width: u8 = 10;
-    let heigth: u8 = 25;
+    let mut config = config::Config::create("config.csv");
+
+    let size: u32 = config.read("size").parse::<u32>().unwrap();
+    let width: u8 = config.read("width").parse::<u8>().unwrap();
+    let heigth: u8 = config.read("height").parse::<u8>().unwrap();
 
     let mut window: PistonWindow =
         WindowSettings::new("WowoTetris", [width as u32 * size, heigth as u32 * size])
@@ -28,7 +30,7 @@ fn main() {
             .unwrap();
 
     let mut app = app::App::create(size, width, heigth);
-    
+
     while let Some(e) = window.next() {
         match e {
             Input::Release(Button::Keyboard(key)) => {
@@ -46,7 +48,9 @@ fn main() {
             _ => {}
         }
 
-        if app.exit {break};
+        if app.exit {
+            break;
+        };
     }
 
     let duration = start.get_elapsed();

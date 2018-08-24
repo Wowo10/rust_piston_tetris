@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.csv": "CSV (semicolon)"
+    },
+    "rust.build_bin": "minigrep",
+}
