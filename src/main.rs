@@ -5,6 +5,7 @@ extern crate rand;
 use piston_window::*;
 
 mod app;
+mod config;
 
 use app::timers::*;
 
