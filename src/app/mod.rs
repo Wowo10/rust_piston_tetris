@@ -366,36 +366,6 @@ impl App {
         }
     }
 
-    pub fn random_block(startpos: u8) -> Vec<[u8; 2]> {
-        //temporary
-        let mut rng = thread_rng();
-
-        //let mut vector = vec![[startpos - 1, 0]];
-        let mut pos: [u8; 2] = [startpos, 0];
-        let mut vector = vec![[pos[0], pos[1]]];
-
-        for _ in 0..3 {
-            let random: u8 = rng.gen();
-            let random2 = random % 2;
-
-            match random2 {
-                0 => {
-                    pos[1] += 1;
-                }
-                1 => {
-                    pos[0] += 1;
-                }
-                _ => {
-                    println!("Something broke: {} %2={}", random, random2);
-                }
-            }
-
-            vector.push([pos[0], pos[1]]);
-        }
-
-        vector
-    }
-
     pub fn random_hardcoded_block(startpos: u8) -> Vec<[u8; 2]> {
         let mut pos: [u8; 2] = [startpos, 0];
         let mut vector = vec![[pos[0], pos[1]]];
