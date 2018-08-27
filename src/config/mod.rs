@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
-
-use std::io;
 use std::io::prelude::*;
-use std::io::SeekFrom;
+use std::io::{BufRead, BufReader, SeekFrom};
 
 pub struct Config {
     file: File,
@@ -20,7 +17,6 @@ impl Config {
     }
 
     pub fn read(&mut self, key: &'static str) -> String {
-
         self.file.seek(SeekFrom::Start(0)).unwrap();
 
         let match_value = self.buffer.get(key).cloned();
@@ -49,5 +45,30 @@ impl Config {
         let temp: Vec<String> = data.split(';').map(String::from).collect();
 
         [temp[0].clone(), temp[1].clone()]
+    }
+
+    pub fn read_color(&mut self, key: &'static str) -> [f32; 4] {
+        let str_array = self.read(key);
+
+        if str_array == "".to_string() {
+            println!(
+                "BUG! Color that you are looking for is not defined: {}",
+                key
+            );
+        }
+
+        let [red, green, blue] = Config::split_color(str_array);
+
+        [red, green, blue, 1.0]
+    }
+
+    fn split_color(data: String) -> [f32; 3] {
+        let temp: Vec<String> = data.split(',').map(String::from).collect();
+
+        [
+            temp[0].clone().parse::<f32>().unwrap(),
+            temp[1].clone().parse::<f32>().unwrap(),
+            temp[2].clone().parse::<f32>().unwrap(),
+        ]
     }
 }

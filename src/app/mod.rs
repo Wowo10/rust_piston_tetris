@@ -12,11 +12,9 @@ use app::rand::prelude::*;
 pub mod timers;
 
 mod block;
+mod constants;
+use self::constants::Constants;
 
-const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
-const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
-const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
-const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 const OFFSET: u32 = 4; //should be even
 
 pub struct App {
@@ -31,10 +29,21 @@ pub struct App {
 
     pub exit: bool,
     pub score: u32,
+
+    pub settings: Constants,
 }
 
 impl App {
-    pub fn create(size: u32, width: u8, height: u8) -> Self {
+    pub fn create(
+        size: u32,
+        width: u8,
+        height: u8,
+        color_background: [f32; 4],
+        color_border: [f32; 4],
+        color_active: [f32; 4],
+        color_taken: [f32; 4],
+        offset: u8,
+    ) -> Self {
         let mut temp = App {
             scene: Vec::new(),
             size: size,
@@ -44,6 +53,14 @@ impl App {
             activeblock: Vec::new(),
             exit: false,
             score: 0,
+
+            settings: Constants {
+                COLOR_BACKGROUND: color_background,
+                COLOR_BORDER: color_border,
+                COLOR_ACTIVE: color_active,
+                COLOR_TAKEN: color_taken,
+                OFFSET: offset,
+            },
         };
 
         temp.init(width, height);
@@ -78,9 +95,9 @@ impl App {
 
         let square = rectangle::square(0.0, 0.0, self.size as f64);
         let squareinner = rectangle::square(
-            (OFFSET / 2) as f64,
-            (OFFSET / 2) as f64,
-            (self.size - OFFSET) as f64,
+            (self.settings.OFFSET / 2) as f64,
+            (self.settings.OFFSET / 2) as f64,
+            (self.size - self.settings.OFFSET as u32) as f64,
         );
 
         let size = (self.size as f64) / 2.0;
@@ -91,18 +108,18 @@ impl App {
         let scene = &self.scene;
 
         window.draw_2d(&e, |c, g| {
-            clear(GREEN, g);
+            clear(self.settings.COLOR_BORDER, g);
 
             for i in 0..width {
                 for j in 0..heigth {
                     let transposition = c.transform
                         .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
-                    rectangle(GREEN, square, transposition, g);
+                    rectangle(self.settings.COLOR_BORDER, square, transposition, g);
 
                     let color = match &scene[i][j] {
-                        State::Free => BLACK,
-                        State::Taken => RED,
-                        _ => BLUE,
+                        State::Free => self.settings.COLOR_BACKGROUND,
+                        State::Taken => self.settings.COLOR_TAKEN,
+                        _ => self.settings.COLOR_ACTIVE,
                     };
 
                     rectangle(color, squareinner, transposition, g);

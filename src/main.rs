@@ -29,7 +29,16 @@ fn main() {
             .build()
             .unwrap();
 
-    let mut app = app::App::create(size, width, heigth);
+    let mut app = app::App::create(
+        size,
+        width,
+        heigth,
+        config.read_color("background_color"),
+        config.read_color("border_color"),
+        config.read_color("active_color"),
+        config.read_color("taken_color"),
+        config.read("offset").parse::<u8>().unwrap(),
+    );
 
     while let Some(e) = window.next() {
         match e {
