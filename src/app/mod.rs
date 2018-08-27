@@ -36,7 +36,6 @@ pub struct App {
 impl App {
     pub fn create(size: u32, width: u8, height: u8) -> Self {
         let mut temp = App {
-            //gl: gl,
             scene: Vec::new(),
             size: size,
             renderframes: 0,
@@ -247,10 +246,12 @@ impl App {
 
             let vec = App::add_vectors(App::translate_to_signed_vector(center), vec);
 
-            self.activeblock.push(App::translate_to_unsigned_vector(vec));
-            if i == 1 { //hack to keep second element the same
+            self.activeblock
+                .push(App::translate_to_unsigned_vector(vec));
+            if i == 1 {
+                //hack to keep second element the same
                 self.activeblock.push(center);
-            } 
+            }
         }
     }
 
@@ -327,12 +328,13 @@ impl App {
 
         let startpos = (self.scene.len() / 2 as usize) as u8 - 1;
 
-        for block in App::random_block(startpos) {
+        for block in App::random_hardcoded_block(startpos) {
             self.activeblock.push(block);
         }
     }
 
     pub fn random_block(startpos: u8) -> Vec<[u8; 2]> {
+        //temporary
         let mut rng = thread_rng();
 
         //let mut vector = vec![[startpos - 1, 0]];
@@ -345,10 +347,10 @@ impl App {
 
             match random2 {
                 0 => {
-                    pos[1] = pos[1] + 1;
+                    pos[1] += 1;
                 }
                 1 => {
-                    pos[0] = pos[0] + 1;
+                    pos[0] += 1;
                 }
                 _ => {
                     println!("Something broke: {} %2={}", random, random2);
@@ -356,6 +358,86 @@ impl App {
             }
 
             vector.push([pos[0], pos[1]]);
+        }
+
+        vector
+    }
+
+    pub fn random_hardcoded_block(startpos: u8) -> Vec<[u8; 2]> {
+        let mut pos: [u8; 2] = [startpos, 0];
+        let mut vector = vec![[pos[0], pos[1]]];
+
+        let mut rng = thread_rng();
+
+        let random: u8 = rng.gen();
+
+        match random % 7 {
+            0 => {
+                //line
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            1 => {
+                //2x2 block
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[0] += 1;
+                pos[1] -= 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            2 => {
+                //z
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[0] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            3 => {
+                //s
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[0] -= 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            4 => {
+                //L
+                pos[0] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            5 => {
+                //~L
+                pos[0] -= 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            6 => {
+                //T
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[1] += 1;
+                vector.push([pos[0], pos[1]]);
+                pos[0] += 1;
+                pos[1] -= 1;
+                vector.push([pos[0], pos[1]]);
+            }
+            _ => {}
         }
 
         vector
