@@ -140,9 +140,22 @@ impl App {
             Key::Down | Key::S => {
                 &self.move_down();
             }
-            Key::Up | Key::W => {
-                &self.rotate();
-            }
+            Key::Up | Key::W => loop {
+                match &self.rotate() {
+                    block::RotateResult::DOWN | block::RotateResult::OK => {
+                        break;
+                    }
+                    block::RotateResult::UP => {
+                        self.move_down();
+                    }
+                    block::RotateResult::LEFT => {
+                        self.move_right();
+                    }
+                    block::RotateResult::RIGHT => {
+                        self.move_left();
+                    }
+                };
+            },
             Key::Space => {
                 &self.drop();
             }
@@ -228,7 +241,7 @@ impl App {
         self.timers.updatetimer.reset();
     }
 
-    fn rotate(&mut self) {
+    fn rotate(&mut self) -> block::RotateResult {
         let center = self.activeblock[1];
         self.activeblock.remove(1);
 
@@ -246,6 +259,24 @@ impl App {
 
             let vec = App::add_vectors(App::translate_to_signed_vector(center), vec);
 
+            if vec[0] < 0 {
+                self.activeblock = copy.to_vec();
+                self.activeblock.insert(1, center);
+                return block::RotateResult::LEFT;
+            } else if vec[1] < 0 {
+                self.activeblock = copy.to_vec();
+                self.activeblock.insert(1, center);
+                return block::RotateResult::UP;
+            } else if vec[0] >= self.scene.len() as i8 {
+                self.activeblock = copy.to_vec();
+                self.activeblock.insert(1, center);
+                return block::RotateResult::RIGHT;
+            } else if vec[1] >= self.scene[0].len() as i8 {
+                self.activeblock = copy.to_vec();
+                self.activeblock.insert(1, center);
+                return block::RotateResult::DOWN;
+            }
+
             self.activeblock
                 .push(App::translate_to_unsigned_vector(vec));
             if i == 1 {
@@ -253,6 +284,8 @@ impl App {
                 self.activeblock.push(center);
             }
         }
+
+        block::RotateResult::OK
     }
 
     fn translate_to_signed_vector(vector: [u8; 2]) -> [i8; 2] {
