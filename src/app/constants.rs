@@ -1,7 +1,7 @@
 pub struct Constants {
-    pub COLOR_BACKGROUND: [f32; 4],
-    pub COLOR_BORDER: [f32; 4],
-    pub COLOR_ACTIVE: [f32; 4],
-    pub COLOR_TAKEN: [f32; 4],
-    pub OFFSET: u8,
+    pub color_background: [f32; 4],
+    pub color_border: [f32; 4],
+    pub color_active: [f32; 4],
+    pub color_taken: [f32; 4],
+    pub offset: u8,
 }

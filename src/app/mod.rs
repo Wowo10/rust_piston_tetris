@@ -15,8 +15,6 @@ mod block;
 mod constants;
 use self::constants::Constants;
 
-const OFFSET: u32 = 4; //should be even
-
 pub struct App {
     pub scene: Vec<Vec<State>>,
 
@@ -55,11 +53,11 @@ impl App {
             score: 0,
 
             settings: Constants {
-                COLOR_BACKGROUND: color_background,
-                COLOR_BORDER: color_border,
-                COLOR_ACTIVE: color_active,
-                COLOR_TAKEN: color_taken,
-                OFFSET: offset,
+                color_background: color_background,
+                color_border: color_border,
+                color_active: color_active,
+                color_taken: color_taken,
+                offset: offset,
             },
         };
 
@@ -95,9 +93,9 @@ impl App {
 
         let square = rectangle::square(0.0, 0.0, self.size as f64);
         let squareinner = rectangle::square(
-            (self.settings.OFFSET / 2) as f64,
-            (self.settings.OFFSET / 2) as f64,
-            (self.size - self.settings.OFFSET as u32) as f64,
+            (self.settings.offset / 2) as f64,
+            (self.settings.offset / 2) as f64,
+            (self.size - self.settings.offset as u32) as f64,
         );
 
         let size = (self.size as f64) / 2.0;
@@ -108,18 +106,18 @@ impl App {
         let scene = &self.scene;
 
         window.draw_2d(&e, |c, g| {
-            clear(self.settings.COLOR_BORDER, g);
+            clear(self.settings.color_border, g);
 
             for i in 0..width {
                 for j in 0..heigth {
                     let transposition = c.transform
                         .trans(size * 2.0 * i as f64, size * 2.0 * j as f64);
-                    rectangle(self.settings.COLOR_BORDER, square, transposition, g);
+                    rectangle(self.settings.color_border, square, transposition, g);
 
                     let color = match &scene[i][j] {
-                        State::Free => self.settings.COLOR_BACKGROUND,
-                        State::Taken => self.settings.COLOR_TAKEN,
-                        _ => self.settings.COLOR_ACTIVE,
+                        State::Free => self.settings.color_background,
+                        State::Taken => self.settings.color_taken,
+                        _ => self.settings.color_active,
                     };
 
                     rectangle(color, squareinner, transposition, g);
