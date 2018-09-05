@@ -44,15 +44,15 @@ fn main() {
         match e {
             Input::Release(Button::Keyboard(key)) => {
                 app.handle_input(key);
-            }
+            },
 
             Input::Update(args) => {
                 app.update(args);
-            }
+            },
 
             Input::Render(args) => {
                 app.render(&mut window, e, args);
-            }
+            },
 
             _ => {}
         }

@@ -81,8 +81,8 @@ impl App {
         for row in &mut self.scene {
             for state in row {
                 match *state {
-                    State::Taken => {}
-                    _ => *state = State::Free,
+                    State::Taken => {},
+                    _ => *state = State::Free
                 }
             }
         }
@@ -117,7 +117,7 @@ impl App {
                     let color = match &scene[i][j] {
                         State::Free => self.settings.color_background,
                         State::Taken => self.settings.color_taken,
-                        _ => self.settings.color_active,
+                        _ => self.settings.color_active
                     };
 
                     rectangle(color, squareinner, transposition, g);
@@ -148,24 +148,24 @@ impl App {
         match key {
             Key::Left | Key::A => {
                 &self.move_left();
-            }
+            },
             Key::Right | Key::D => {
                 &self.move_right();
-            }
+            },
             Key::Down | Key::S => {
                 &self.move_down();
-            }
+            },
             Key::Up | Key::W => loop {
                 match &self.rotate() {
                     block::RotateResult::DOWN | block::RotateResult::OK => {
                         break;
-                    }
+                    },
                     block::RotateResult::UP => {
                         self.move_down();
-                    }
+                    },
                     block::RotateResult::LEFT => {
                         self.move_right();
-                    }
+                    },
                     block::RotateResult::RIGHT => {
                         self.move_left();
                     }
@@ -173,7 +173,7 @@ impl App {
             },
             Key::Space => {
                 &self.drop();
-            }
+            },
 
             _ => {}
         }
@@ -188,7 +188,7 @@ impl App {
             match &self.scene[(x_pos - 1) as usize][block[1] as usize] {
                 State::Taken => {
                     return false;
-                }
+                },
                 _ => {}
             }
         }
@@ -213,7 +213,7 @@ impl App {
             match &self.scene[(x_pos + 1) as usize][block[1] as usize] {
                 State::Taken => {
                     return false;
-                }
+                },
                 _ => {}
             }
         }
@@ -238,7 +238,7 @@ impl App {
             match &self.scene[block[0] as usize][(block[1] + 1) as usize] {
                 State::Taken => {
                     return false;
-                }
+                },
                 _ => {}
             }
         }
@@ -338,7 +338,7 @@ impl App {
             let mut test = true;
             for j in 0..self.scene.len() {
                 match self.scene[j][i] {
-                    State::Taken => {}
+                    State::Taken => {},
                     _ => {
                         test = false;
                         break;
@@ -398,7 +398,7 @@ impl App {
                 vector.push([pos[0], pos[1]]);
                 pos[1] += 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             1 => {
                 //2x2 block
                 pos[1] += 1;
@@ -408,7 +408,7 @@ impl App {
                 vector.push([pos[0], pos[1]]);
                 pos[1] += 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             2 => {
                 //z
                 pos[1] += 1;
@@ -417,7 +417,7 @@ impl App {
                 vector.push([pos[0], pos[1]]);
                 pos[1] += 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             3 => {
                 //s
                 pos[1] += 1;
@@ -426,7 +426,7 @@ impl App {
                 vector.push([pos[0], pos[1]]);
                 pos[1] += 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             4 => {
                 //L
                 pos[0] += 1;
@@ -435,7 +435,7 @@ impl App {
                 vector.push([pos[0], pos[1]]);
                 pos[1] += 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             5 => {
                 //~L
                 pos[0] -= 1;
@@ -444,7 +444,7 @@ impl App {
                 vector.push([pos[0], pos[1]]);
                 pos[1] += 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             6 => {
                 //T
                 pos[1] += 1;
@@ -454,7 +454,7 @@ impl App {
                 pos[0] += 1;
                 pos[1] -= 1;
                 vector.push([pos[0], pos[1]]);
-            }
+            },
             _ => {}
         }
 
